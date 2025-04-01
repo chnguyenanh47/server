@@ -31,7 +31,7 @@ export class AuthService {
 
     const payload = { username: user.username, sub: user.id };
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '1m',
+      expiresIn: '1d',
     });
     user.accessToken = accessToken;
     await this.saveUsersToFile();
@@ -48,10 +48,11 @@ export class AuthService {
       throw new BadRequestException('Username is already taken');
     }
     const hashedPassword = await this.hashPassword(password);
+    const randomId = Math.floor(Math.random() * 1000000);
     const newUser: UserDto = {
       username,
       password: hashedPassword,
-      id: 1,
+      id: randomId,
     };
     this.users.push(newUser);
     await this.saveUsersToFile();
