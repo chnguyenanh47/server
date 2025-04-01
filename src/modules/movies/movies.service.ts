@@ -31,7 +31,7 @@ export class MoviesService {
         this.movies = [];
       }
     } catch (error) {
-      console.error('Error reading or parsing the file:', error);
+      console.error('Lỗi đọc file json', error);
       throw new BadRequestException('Unable to load movies data');
     }
   }
@@ -47,6 +47,11 @@ export class MoviesService {
     if (search) {
       filteredMovies = this.movies.filter((movie) =>
         movie.title.toLowerCase().includes(search.toLowerCase()),
+      );
+    }
+    if (!filteredMovies.length) {
+      throw new NotFoundException(
+        'No movies found matching the search criteria',
       );
     }
     return paginate(
@@ -71,14 +76,14 @@ export class MoviesService {
 
     Object.assign(this.movies[movieIndex], updateData);
     try {
-      const updatedData = JSON.stringify(this.movies, null, 2);
+      const updatedData = JSON.stringify(this.movies);
       await fs.writeFile(
         path.join(process.cwd(), './src/data/movies.json'),
         updatedData,
         'utf-8',
       );
     } catch (writeError) {
-      console.error('Error writing to file:', writeError);
+      console.error('Lỗi cập nhật file', writeError);
     }
 
     return {
